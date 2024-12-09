@@ -41,12 +41,13 @@ class WeatherController extends AppController
     {
         $weather = Weather::findOne(['file' => 'weather_yandex_json']);
 
-        $created_at = $weather->created_at;
-        if(($created_at+60*30) >= time()){
+        if(!empty($weather) && ($weather->created_at+60*30) >= time()){
             $client = new Client([
-                'transport' => 'yii\httpclient\CurlTransport' 
+                'transport' => 'yii\httpclient\CurlTransport'
             ]);
 
+            //токен ?
+            // переменные из env ?
             $response = $client->createRequest()
                 ->setMethod('POST')
                 ->setUrl(Yii::$app->environment->LINK)
