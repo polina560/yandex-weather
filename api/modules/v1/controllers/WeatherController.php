@@ -7,8 +7,10 @@ use common\models\Weather;
 use OpenApi\Attributes\Get;
 use OpenApi\Attributes\Items;
 use OpenApi\Attributes\Property;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
+use yii\httpclient\Client;
 
 class WeatherController extends AppController
 {
@@ -40,14 +42,28 @@ class WeatherController extends AppController
         $weather = Weather::findOne(['file' => 'weather_yandex_json']);
 
         $created_at = $weather->created_at;
-        if(($created_at+60*30) < time())
-            $json = $weather->file;
-        else{
+        if(($created_at+60*30) >= time()){
+            $client = new Client([
+                'transport' => 'yii\httpclient\CurlTransport' 
+            ]);
 
+            $response = $client->createRequest()
+                ->setMethod('POST')
+                ->setUrl(Yii::$app->environment->LINK)
+                ->setData(['latitude' => Yii::$app->environment->LATITUDE, 'longitude' => Yii::$app->environment->LONGITUDE])
+                ->setOptions([
+                    CURLOPT_CONNECTTIMEOUT => 5, // тайм-аут подключения
+                    CURLOPT_TIMEOUT => 10, // тайм-аут получения данных
+                ])
+                ->send();
+
+            file_put_contents(Yii::$app->request->hostInfo . $weather->file, $response);
+            $weather->created_at = time();
+            $weather->save();
         }
 
         return $this->returnSuccess([
-            'weather' =>  $json]);
+            'weather' =>  $weather]);
 
 
     }
