@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = RbacHtml::encode($this->title);
         'attributes' => [
             Column::widget(),
             Column::widget(['attr' => 'key']),
-            Column::widget(['attr' => 'file']),
+            Column::widget(['attr' => 'file', 'format' => 'ntext']),
             Column::widget(['attr' => 'created_at', 'format' => 'datetime']),
         ]
     ]) ?>

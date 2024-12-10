@@ -19,7 +19,7 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'key')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'file')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'file')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
         <?php if ($isCreate) {

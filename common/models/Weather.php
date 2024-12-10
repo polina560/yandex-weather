@@ -5,6 +5,7 @@ namespace common\models;
 use common\models\AppActiveRecord;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
+
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -17,10 +18,9 @@ use yii\helpers\ArrayHelper;
  * @property string $file       JSON файл
  * @property int    $created_at Дата создания
  */
-
-#[Schema ( properties: [
+#[Schema (properties: [
     new Property(property: 'file', type: 'string')
-])]
+] )]
 class Weather extends AppActiveRecord
 {
     /**
@@ -51,17 +51,19 @@ class Weather extends AppActiveRecord
     {
         return [
             [['file'], 'required'],
+            [['file'], 'string'],
             [['created_at'], 'integer'],
-            [['key', 'file'], 'string', 'max' => 255]
+            [['key'], 'string', 'max' => 255]
         ];
     }
 
-    public function fields()
-    {
+
+    public function fields(){
+
         return [
-          'file'
-//          => fn() => file_get_contents(Yii::$app->request->hostInfo . $this->file)
+            'file'
         ];
+
     }
 
     /**
