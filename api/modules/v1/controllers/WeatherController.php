@@ -95,24 +95,5 @@ class WeatherController extends AppController
 
     }
 
-    public function getWeatherStreamContext()
-    {
-        $access_key = Yii::$app->environment->TOKEN_KEY;
-
-        $opts = array(
-            'http' => array(
-                'method' => 'GET',
-                'header' => 'X-Yandex-Weather-Key: ' . $access_key,
-                'data' => ['lat' => Yii::$app->environment->LATITUDE, 'lon' => Yii::$app->environment->LONGITUDE]
-            )
-        );
-
-        $context = stream_context_create($opts);
-
-        $file =
-            file_get_contents(Yii::$app->environment->WEATHER_API_LINK,
-                false, $context);
-        return $file;
-    }
 
 }
