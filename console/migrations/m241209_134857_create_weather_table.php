@@ -15,7 +15,7 @@ class m241209_134857_create_weather_table extends Migration
         $this->createTable('{{%weather}}', [
             'id' => $this->primaryKey(),
             'key' => $this->string()->defaultValue('yandex_weather_json')->notNull()->comment('Ключ'),
-            'file' => $this->text()->notNull()->comment('JSON файл'),
+            'json' => $this->text()->notNull()->comment('JSON'),
             'created_at' => $this->integer()->notNull()->comment('Дата создания'),
         ]);
     }

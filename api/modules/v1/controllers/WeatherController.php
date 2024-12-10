@@ -39,24 +39,24 @@ class WeatherController extends AppController
     ])]
     public function actionIndex(): array
     {
-        $weather = Weather::findOne(['file' => 'weather_yandex_json']);
+        $weather = Weather::findOne(['key' => 'weather_yandex_json']);
 
         if(empty($weather))
             $weather = new Weather();
 
-        if(($weather->created_at+60*30) < time() && $weather->created_at != null) {
+        if(($weather->created_at + 60 * 30) < time() && $weather->created_at != null) {
             return $this->returnSuccess([
                 'weather' => $weather
             ]);
         }
         else{
     //            file_put_contents(Yii::$app->request->hostInfo . $weather->file, $response);
-            [$errors, $file] = $this->getWeatherStreamContext();
-            if($errors){
-                return $this->returnError([
-                    'Ошибка подклюячения к Yandex.Weather' ]);
-            }
-            $weather->file = $file;
+            $file = $this->getWeatherStreamContext();
+//            if($errors){
+//                return $this->returnError([
+//                    'Ошибка 500' ]);
+//            }
+            $weather->json = $file;
             $weather->created_at = time();
             $weather->save();
         }

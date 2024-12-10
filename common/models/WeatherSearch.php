@@ -19,7 +19,7 @@ final class WeatherSearch extends Weather
     {
         return [
             [['id'], 'integer'],
-            [['key', 'file', 'created_at'], 'safe']
+            [['key', 'json', 'created_at'], 'safe']
         ];
     }
 
@@ -59,7 +59,7 @@ final class WeatherSearch extends Weather
         ]);
 
         $query->andFilterWhere(['like', 'key', $this->key])
-            ->andFilterWhere(['like', 'file', $this->file]);
+            ->andFilterWhere(['like', 'json', $this->json]);
 
         // date filtering helper
         SearchQueryHelper::filterDataRange(['created_at'], $this, $query);

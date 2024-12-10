@@ -52,6 +52,10 @@ if (!Yii::$app->user->isGuest) {
                 [
                     'label' => Icon::show('align-justify') . 'Тексты',
                     'url' => UserUrl::setFilters(TextSearch::class, ['/text/index'])
+                ],
+                [
+                    'label' =>  'Погода',
+                    'url' => UserUrl::setFilters(\common\models\WeatherSearch::class, ['/weather/index'])
                 ]
             ]
         ],

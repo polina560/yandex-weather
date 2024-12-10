@@ -5,7 +5,6 @@ namespace common\models;
 use common\models\AppActiveRecord;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
-
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -15,12 +14,12 @@ use yii\helpers\ArrayHelper;
  *
  * @property int    $id
  * @property string $key        Ключ
- * @property string $file       JSON файл
+ * @property string $json       JSON
  * @property int    $created_at Дата создания
  */
 #[Schema (properties: [
-    new Property(property: 'file', type: 'string')
-] )]
+    new Property(property: 'json', type: 'string')
+])]
 class Weather extends AppActiveRecord
 {
     /**
@@ -50,21 +49,19 @@ class Weather extends AppActiveRecord
     public function rules(): array
     {
         return [
-            [['file'], 'required'],
-            [['file'], 'string'],
+            [['json'], 'required'],
+            [['json'], 'string'],
             [['created_at'], 'integer'],
             [['key'], 'string', 'max' => 255]
         ];
     }
 
-
-    public function fields(){
-
+    public function fields() {
         return [
-            'file'
+            'json'
         ];
-
     }
+
 
     /**
      * {@inheritdoc}
@@ -74,7 +71,7 @@ class Weather extends AppActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'key' => Yii::t('app', 'Key'),
-            'file' => Yii::t('app', 'File'),
+            'json' => Yii::t('app', 'Json'),
             'created_at' => Yii::t('app', 'Created At'),
         ];
     }

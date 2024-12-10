@@ -6,7 +6,6 @@ use admin\components\widgets\gridView\ColumnDate;
 use admin\modules\rbac\components\RbacHtml;
 use admin\widgets\sortableGridView\SortableGridView;
 use kartik\grid\SerialColumn;
-use yii\httpclient\Client;
 use yii\widgets\ListView;
 
 /**
@@ -25,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div>
         <?=
-            RbacHtml::a(Yii::t('app', 'Create Weather'), ['create'], ['class' => 'btn btn-success']);
+            RbacHtml::a(Yii::t('app', 'Create'), ['create'], ['class' => 'btn btn-success']);
 //           $this->render('_create_modal', ['model' => $model]);
         ?>
     </div>
@@ -38,30 +37,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => SerialColumn::class],
 
             Column::widget(),
-            Column::widget(['attr' => 'key']),
-            Column::widget(['attr' => 'file', 'format' => 'ntext']),
+            Column::widget(['attr' => 'key', 'editable' => false]),
+//            Column::widget(['attr' => 'json', 'format' => 'ntext']),
             ColumnDate::widget(['attr' => 'created_at', 'searchModel' => $searchModel, 'editable' => false]),
 
-            ['class' => GroupedActionColumn::class]
+            ['class' => GroupedActionColumn::class,
+                'buttons' => [
+                    'update' => function () {return null;},
+                    'delete' => function () {return null;}
+                ]
+            ]
         ]
     ]) ?>
-
-    <?php
-
-    $access_key = '4371045b-5cd6-4956-b194-71885ac091c5';
-
-    $opts = array(
-        'http' => array(
-            'method' => 'GET',
-            'header' => 'X-Yandex-Weather-Key: ' . $access_key
-        )
-    );
-
-    $context = stream_context_create($opts);
-
-    $file =
-        file_get_contents('https://api.weather.yandex.ru/v2/forecast?lat=52.37125&lon=4.89388',
-            false, $context);
-    echo $file;
-    ?>
 </div>
