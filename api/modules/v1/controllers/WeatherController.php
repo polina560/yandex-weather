@@ -39,30 +39,31 @@ class WeatherController extends AppController
     ])]
     public function actionIndex(): array
     {
-        $weather = Weather::findOne(['key' => 'weather_yandex_json']);
+        $weather = Weather::findOne(['key' => 'yandex_weather_json']);
 
-        if(empty($weather))
+        if(empty($weather)) {
             $weather = new Weather();
+            $weather->key = 'yandex_weather_json';
+        }
 
         if(($weather->created_at + 60 * 30) < time() && $weather->created_at != null) {
             return $this->returnSuccess([
-                'weather' => $weather
+                'weather' => json_decode($weather->json)
             ]);
         }
         else{
-    //            file_put_contents(Yii::$app->request->hostInfo . $weather->file, $response);
-            $file = $this->getWeatherStreamContext();
-//            if($errors){
-//                return $this->returnError([
-//                    'Ошибка 500' ]);
-//            }
+            $file = $this->getWeatherHttpClient();
+            if(!$file){
+                return $this->returnError([
+                    'Ошибка 500' ]);
+            }
             $weather->json = $file;
             $weather->created_at = time();
             $weather->save();
         }
 
         return $this->returnSuccess([
-            'weather' =>  json_decode($this->getWeatherStreamContext())]);
+            'weather' =>  json_decode($this->getWeatherHttpClient())]);
 
 
     }
@@ -78,19 +79,19 @@ class WeatherController extends AppController
             'lon' => fn() => Yii::$app->environment->LONGITUDE,
         ];
 
-        $response = $client->get($url, $params, [
-            'headers' => [
-                'X-Yandex-Weather-Key' => Yii::$app->environment->TOKEN_KEY,
-            ]
-        ])->send();
-
-        $errors = null;
-
-        if(!$response->isOk)
-            $errors = 1;
+        $response = $client->createRequest()
+            ->setUrl($url)
+            ->addHeaders(['X-Yandex-Weather-Key' => Yii::$app->environment->TOKEN_KEY])
+            ->setData($params)
+            ->send();
 
 
-        return [$errors, $response];
+        if($response->isOk)
+            return  $response->content;
+        else {
+            Yii::error($response->statusCode);
+            return null;
+        }
 
     }
 

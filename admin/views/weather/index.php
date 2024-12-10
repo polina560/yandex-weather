@@ -6,6 +6,7 @@ use admin\components\widgets\gridView\ColumnDate;
 use admin\modules\rbac\components\RbacHtml;
 use admin\widgets\sortableGridView\SortableGridView;
 use kartik\grid\SerialColumn;
+use yii\httpclient\Client;
 use yii\widgets\ListView;
 
 /**
@@ -48,5 +49,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ]
         ]
-    ]) ?>
+    ])?>
+
+
+        <?php
+
+
+        ?>
 </div>
