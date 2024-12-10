@@ -59,7 +59,8 @@ class Weather extends AppActiveRecord
     public function fields()
     {
         return [
-          'file' => fn() => file_get_contents(Yii::$app->request->hostInfo . $this->file)
+          'file'
+//          => fn() => file_get_contents(Yii::$app->request->hostInfo . $this->file)
         ];
     }
 

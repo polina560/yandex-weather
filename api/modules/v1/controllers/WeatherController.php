@@ -41,27 +41,40 @@ class WeatherController extends AppController
     {
         $weather = Weather::findOne(['file' => 'weather_yandex_json']);
 
-        if(!empty($weather) && ($weather->created_at+60*30) >= time()){
+        if(empty($weather))
+            $weather = new Weather();
+
+        if(($weather->created_at+60*30) < time() && $weather->created_at != null) {
+            return $this->returnSuccess([
+                'weather' => $weather
+            ]);
+        }
+        else{
             $client = new Client([
                 'transport' => 'yii\httpclient\CurlTransport'
             ]);
 
             //токен ?
             // переменные из env ?
+    //      $fh = fopen($weather->file, 'w');
             $response = $client->createRequest()
                 ->setMethod('POST')
+                ->addHeaders(['Authorization' => 'Basic ' . base64_encode(Yii::$app->environment->TOKEN_NAME . ":". Yii::$app->environment->TOKEN_KEY)])
                 ->setUrl(Yii::$app->environment->LINK)
                 ->setData(['latitude' => Yii::$app->environment->LATITUDE, 'longitude' => Yii::$app->environment->LONGITUDE])
+    //               ->setOutputFile($fh)
                 ->setOptions([
                     CURLOPT_CONNECTTIMEOUT => 5, // тайм-аут подключения
-                    CURLOPT_TIMEOUT => 10, // тайм-аут получения данных
+                     CURLOPT_TIMEOUT => 10, // тайм-аут получения данных
                 ])
                 ->send();
 
-            file_put_contents(Yii::$app->request->hostInfo . $weather->file, $response);
-            $weather->created_at = time();
-            $weather->save();
+    //            file_put_contents(Yii::$app->request->hostInfo . $weather->file, $response);
+                $weather->file = $response;
+                $weather->created_at = time();
+                $weather->save();
         }
+
 
         return $this->returnSuccess([
             'weather' =>  $weather]);
