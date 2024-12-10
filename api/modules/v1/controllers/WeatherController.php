@@ -51,14 +51,18 @@ class WeatherController extends AppController
         }
         else{
     //            file_put_contents(Yii::$app->request->hostInfo . $weather->file, $response);
-                $weather->file = $this->getWeatherStreamContext();
-                $weather->created_at = time();
-                $weather->save();
+            [$errors, $file] = $this->getWeatherStreamContext();
+            if($errors){
+                return $this->returnError([
+                    'Ошибка подклюячения к Yandex.Weather' ]);
+            }
+            $weather->file = $file;
+            $weather->created_at = time();
+            $weather->save();
         }
 
-
         return $this->returnSuccess([
-            'weather' =>  $weather]);
+            'weather' =>  json_decode($this->getWeatherStreamContext())]);
 
 
     }
@@ -68,18 +72,26 @@ class WeatherController extends AppController
         $client = new Client([
             'transport' => 'yii\httpclient\CurlTransport'
         ]);
+        $url = Yii::$app->environment->WEATHER_API_LINK;
+        $params = [
+            'lat' => fn() => Yii::$app->environment->LATITUDE,
+            'lon' => fn() => Yii::$app->environment->LONGITUDE,
+        ];
 
-        return $response = $client->createRequest()
-            ->setMethod('GET')
-            ->addHeaders(['Authorisation' => 'X-Yandex-Weather-Key: ' . Yii::$app->environment->TOKEN_KEY])
-            ->setUrl(Yii::$app->environment->LINK)
-//            ->setData(['latitude' => Yii::$app->environment->LATITUDE, 'longitude' => Yii::$app->environment->LONGITUDE])
-            //               ->setOutputFile($fh)
-//            ->setOptions([
-//                CURLOPT_CONNECTTIMEOUT => 5, // тайм-аут подключения
-//                CURLOPT_TIMEOUT => 10, // тайм-аут получения данных
-//            ])
-            ->send();
+        $response = $client->get($url, $params, [
+            'headers' => [
+                'X-Yandex-Weather-Key' => Yii::$app->environment->TOKEN_KEY,
+            ]
+        ])->send();
+
+        $errors = null;
+
+        if(!$response->isOk)
+            $errors = 1;
+
+
+        return [$errors, $response];
+
     }
 
     public function getWeatherStreamContext()
